@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Yodz · Compte confirmé</title>
+<style>
+  :root { --bg: #0A0A0C; --card: #141518; --ink: #F5F6F8; --dim: #9398A1; --line: rgba(255,255,255,0.08); }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--ink); font: 400 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Inter, system-ui, sans-serif; display: grid; place-items: center; padding: 24px 16px; }
+  main { width: 100%; max-width: 440px; text-align: center; }
+  .island { width: 168px; height: 40px; margin: 0 auto 36px; border-radius: 0 0 20px 20px; background: #000; box-shadow: 0 0 0 1px var(--line), 0 18px 40px rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; gap: 10px; animation: drop 0.9s cubic-bezier(0.3, 1.2, 0.4, 1) both; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #34D399; box-shadow: 0 0 12px #34D399; }
+  .island span { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+  .island.err .dot { background: #FF6B6B; box-shadow: 0 0 12px #FF6B6B; }
+  h1 { font-size: clamp(26px, 6vw, 34px); line-height: 1.1; font-weight: 700; letter-spacing: -0.025em; animation: rise 0.7s 0.15s ease-out both; }
+  p { color: var(--dim); margin-top: 14px; animation: rise 0.7s 0.25s ease-out both; }
+  .steps { margin-top: 28px; text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; animation: rise 0.7s 0.35s ease-out both; }
+  .steps li { color: #C9CDD4; font-size: 15px; padding: 6px 0 6px 4px; }
+  .steps li::marker { color: var(--dim); font-weight: 600; }
+  small { display: block; margin-top: 22px; color: #5C616B; font-size: 12.5px; animation: rise 0.7s 0.45s ease-out both; }
+  @keyframes drop { from { transform: translateY(-48px); opacity: 0; } }
+  @keyframes rise { from { transform: translateY(10px); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="island" id="island"><i class="dot"></i><span>Yodz</span></div>
+  <h1 id="title">Ton compte est confirmé.</h1>
+  <p id="text">Ton adresse email a bien été enregistrée. Tu peux fermer cette page et retourner dans Yodz.</p>
+  <ol class="steps" id="steps">
+    <li>Ouvre Yodz (la barre noire en haut de ton écran).</li>
+    <li>Clique sur l'icône de profil, puis sur « Me connecter ».</li>
+    <li>Entre ton email et ton mot de passe.</li>
+  </ol>
+  <small>Yodz, le petit chat de ton bureau.</small>
+</main>
+<script>
+  // Le lien de confirmation renvoie ici. On n'affiche ni ne garde aucun jeton de connexion.
+  (function () {
+    var raw = (location.hash || "").slice(1) + "&" + (location.search || "").slice(1);
+    var params = new URLSearchParams(raw);
+    var error = params.get("error_description") || params.get("error");
+    if (history.replaceState) history.replaceState(null, "", location.pathname);
+    if (!error) return;
+    document.getElementById("island").classList.add("err");
+    document.getElementById("title").textContent = "Ce lien ne marche plus.";
+    document.getElementById("text").textContent = /expired|invalid/i.test(error)
+      ? "Le lien de confirmation a expiré ou a déjà été utilisé. Si ton compte est déjà confirmé, connecte-toi simplement dans Yodz. Sinon, recrée ton compte pour recevoir un nouveau lien."
+      : "La confirmation n'a pas abouti. Réessaie depuis Yodz.";
+    document.getElementById("steps").style.display = "none";
+  })();
+</script>
+</body>
+</html>
